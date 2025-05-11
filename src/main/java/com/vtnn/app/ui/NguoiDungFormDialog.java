@@ -6,10 +6,11 @@ import com.vtnn.app.dao.NguoiDungDAO;
 import com.vtnn.app.dao.NhanVienDAO;
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 public class NguoiDungFormDialog extends JDialog {
-    private JTextField usernameField, passwordField, maNVField;
-    private JComboBox<UserRole> roleBox;
+    private JPasswordField passwordField;
+    private JComboBox<Object[]> staffBox;
     private boolean saved = false;
     private NguoiDungDTO user;
     private NguoiDungDAO dao;
@@ -18,7 +19,7 @@ public class NguoiDungFormDialog extends JDialog {
     public NguoiDungFormDialog(NguoiDungDTO user) throws Exception {
         dao = new NguoiDungDAO();
         nhanVienDAO = new NhanVienDAO();
-        setTitle(user == null ? "Add User" : "Edit User");
+        setTitle(user == null ? "Thêm Người Dùng" : "Sửa Người Dùng");
         setModal(true);
         
         // Main panel with padding
@@ -32,41 +33,39 @@ public class NguoiDungFormDialog extends JDialog {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
         
-        // Username field
+        // Staff selection field
         gbc.gridx = 0; gbc.gridy = 0;
-        formPanel.add(new JLabel("Username:"), gbc);
+        formPanel.add(new JLabel("Nhân viên:"), gbc);
         gbc.gridx = 1;
-        usernameField = new JTextField(20);
-        formPanel.add(usernameField, gbc);
+        staffBox = new JComboBox<>();
+        staffBox.setRenderer(new DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value != null) {
+                    Object[] staff = (Object[])value;
+                    setText(staff[1].toString()); // Display staff name
+                }
+                return this;
+            }
+        });
+        populateStaffBox();
+        formPanel.add(staffBox, gbc);
         
         // Password field
         gbc.gridx = 0; gbc.gridy = 1;
-        formPanel.add(new JLabel("Password:"), gbc);
+        formPanel.add(new JLabel("Mật khẩu:"), gbc);
         gbc.gridx = 1;
-        passwordField = new JTextField(20);
+        passwordField = new JPasswordField(20);
         formPanel.add(passwordField, gbc);
-        
-        // MaNV field
-        gbc.gridx = 0; gbc.gridy = 2;
-        formPanel.add(new JLabel("MaNV:"), gbc);
-        gbc.gridx = 1;
-        maNVField = new JTextField(20);
-        formPanel.add(maNVField, gbc);
-        
-        // Role field
-        gbc.gridx = 0; gbc.gridy = 3;
-        formPanel.add(new JLabel("Role:"), gbc);
-        gbc.gridx = 1;
-        roleBox = new JComboBox<>(UserRole.values());
-        formPanel.add(roleBox, gbc);
         
         mainPanel.add(formPanel);
         mainPanel.add(Box.createVerticalStrut(20));
         
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JButton saveBtn = new JButton("Save");
-        JButton cancelBtn = new JButton("Cancel");
+        JButton saveBtn = new JButton("Lưu");
+        JButton cancelBtn = new JButton("Hủy");
         
         // Style buttons
         styleButton(saveBtn);
@@ -75,44 +74,43 @@ public class NguoiDungFormDialog extends JDialog {
         saveBtn.addActionListener(e -> {
             try {
                 // Validate required fields
-                if (usernameField.getText().trim().isEmpty() || 
-                    passwordField.getText().trim().isEmpty() || 
-                    maNVField.getText().trim().isEmpty()) {
-                    JOptionPane.showMessageDialog(this, "Please fill in all fields", "Validation Error",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                // Validate MaNV exists
-                int maNV = Integer.parseInt(maNVField.getText().trim());
-                if (!nhanVienDAO.exists(maNV)) {
+                if (passwordField.getPassword().length == 0) {
                     JOptionPane.showMessageDialog(this, 
-                        "MaNV does not exist in the NhanVien table", 
-                        "Validation Error",
+                        "Vui lòng nhập mật khẩu", 
+                        "Lỗi", 
                         JOptionPane.ERROR_MESSAGE);
                     return;
                 }
 
+                // Get selected staff
+                Object[] selectedStaff = (Object[])staffBox.getSelectedItem();
+                if (selectedStaff == null) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Vui lòng chọn nhân viên", 
+                        "Lỗi", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                // Create DTO
                 NguoiDungDTO newUser = new NguoiDungDTO(
-                        usernameField.getText().trim(),
-                        passwordField.getText().trim(),
-                        maNV,
-                        (UserRole) roleBox.getSelectedItem());
-                if (user == null)
+                    selectedStaff[1].toString(), // Use staff name as username
+                    new String(passwordField.getPassword()),
+                    (int)selectedStaff[0] // Staff ID
+                );
+
+                if (user == null) {
                     dao.insert(newUser);
-                else
+                } else {
                     dao.update(newUser);
+                }
+                
                 saved = true;
                 dispose();
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, 
-                    "MaNV must be a valid number", 
-                    "Validation Error",
-                    JOptionPane.ERROR_MESSAGE);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, 
-                    "Error: " + ex.getMessage(), 
-                    "Error",
+                JOptionPane.showMessageDialog(this,
+                    "Lỗi: " + ex.getMessage(),
+                    "Lỗi",
                     JOptionPane.ERROR_MESSAGE);
             }
         });
@@ -123,21 +121,33 @@ public class NguoiDungFormDialog extends JDialog {
         buttonPanel.add(cancelBtn);
         mainPanel.add(buttonPanel);
         
-        // Set user data if editing
-        if (user != null) {
-            usernameField.setText(user.getTenDangNhap());
-            usernameField.setEnabled(false);
-            passwordField.setText(user.getMatKhau());
-            maNVField.setText(String.valueOf(user.getMaNV()));
-            roleBox.setSelectedItem(user.getVaiTro());
-        }
-        
+        // Set dialog properties
         add(mainPanel);
         pack();
         setLocationRelativeTo(null);
-        setResizable(false);
+        
+        // If editing, populate fields
+        if (user != null) {
+            // Find and select the staff in the combo box
+            for (int i = 0; i < staffBox.getItemCount(); i++) {
+                Object[] staff = (Object[])staffBox.getItemAt(i);
+                if ((int)staff[0] == user.getMaNV()) {
+                    staffBox.setSelectedIndex(i);
+                    break;
+                }
+            }
+            staffBox.setEnabled(false); // Disable staff selection when editing
+            passwordField.setText(user.getMatKhau());
+        }
     }
-    
+
+    private void populateStaffBox() throws Exception {
+        List<Object[]> staffList = nhanVienDAO.dsNhanVien();
+        for (Object[] staff : staffList) {
+            staffBox.addItem(staff);
+        }
+    }
+
     private void styleButton(JButton button) {
         button.setPreferredSize(new Dimension(100, 30));
         button.setFocusPainted(false);

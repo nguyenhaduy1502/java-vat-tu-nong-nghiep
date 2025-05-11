@@ -96,7 +96,7 @@ public class NhanVienDAO {
     public boolean suaNhanVien(NhanVienDTO nhanVien) throws Exception {
         String query = "UPDATE NhanVien SET HoTen = ?, NgaySinh = ?, GioiTinh = ?, SoDienThoai = ?, DiaChi = ?, Email = ?, VaiTro = ? WHERE MaNV = ?";
         try (Connection conn = connection.getConnect();
-                PreparedStatement statement = conn.prepareStatement(query)) {
+             PreparedStatement statement = conn.prepareStatement(query)) {
             statement.setString(1, nhanVien.getHoTen());
             statement.setDate(2, nhanVien.getNgaySinh());
             statement.setInt(3, nhanVien.getGioiTinh());
@@ -145,17 +145,18 @@ public class NhanVienDAO {
         return dsNhanVien;
     }
     
-    //Phuơng thức tìm nhân viên bằng MaNV
+    //Phương thức tìm nhân viên bằng MaNV
     public Object[] timNhanVien(int maNV) throws Exception {
         String query = """
-                       SELECT NhanVien.MaNV, NhanVien.HoTen, NhanVien.NgaySinh, GioiTinh.LoaiGT, NhanVien.SoDienThoai, NhanVien.DiaChi, NhanVien.Email, VaiTro.TenVT
+                       SELECT NhanVien.MaNV, NhanVien.HoTen, NhanVien.NgaySinh, GioiTinh.LoaiGT, 
+                              NhanVien.SoDienThoai, NhanVien.DiaChi, NhanVien.Email, VaiTro.TenVT
                        FROM NhanVien
                        JOIN GioiTinh ON NhanVien.GioiTinh = GioiTinh.MaGT
                        JOIN VaiTro ON NhanVien.VaiTro = VaiTro.MaVT
                        WHERE NhanVien.MaNV = ?
                        """;
         try (Connection conn = connection.getConnect();
-                PreparedStatement statement = conn.prepareStatement(query)) {
+             PreparedStatement statement = conn.prepareStatement(query)) {
             statement.setInt(1, maNV);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
@@ -169,17 +170,16 @@ public class NhanVienDAO {
                         resultSet.getString("Email"),
                         resultSet.getString("TenVT")
                     };
-                } else {
-                    throw new Exception("Không tìm thấy nhân viên với mã: " + maNV);
                 }
-            }  
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new SQLException("Lỗi khi tìm kiếm nhân viên theo mã", e);
+            throw new SQLException("Lỗi khi tìm thông tin nhân viên", e);
         }
+        return null;
     }
     
-    // Check if MaNV exists in NhanVien table
+    //Phương thức kiểm tra nhân viên có tồn tại không
     public boolean exists(int maNV) throws Exception {
         String query = "SELECT COUNT(*) FROM NhanVien WHERE MaNV = ?";
         try (Connection conn = connection.getConnect();
@@ -192,7 +192,7 @@ public class NhanVienDAO {
             }
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new SQLException("Lỗi khi kiểm tra tồn tại của mã nhân viên", e);
+            throw new SQLException("Lỗi khi kiểm tra tồn tại nhân viên", e);
         }
         return false;
     }

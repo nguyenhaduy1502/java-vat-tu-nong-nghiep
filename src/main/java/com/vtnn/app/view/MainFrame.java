@@ -2,6 +2,7 @@ package com.vtnn.app.view;
 
 import com.vtnn.app.models.UserRole;
 import com.vtnn.app.ui.NguoiDungTablePanel;
+import com.vtnn.app.ui.NhanVienTablePanel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -133,9 +134,14 @@ public class MainFrame extends JFrame {
                     NguoiDungTablePanel userPanel = new NguoiDungTablePanel();
                     cardPanels.put("users", userPanel);
                     mainPanel.add(userPanel, "users");
+
+                    // Add staff management panel
+                    NhanVienTablePanel staffPanel = new NhanVienTablePanel();
+                    cardPanels.put("staff", staffPanel);
+                    mainPanel.add(staffPanel, "staff");
                 } catch (Exception e) {
                     e.printStackTrace();
-                    JOptionPane.showMessageDialog(this, "Error loading user management: " + e.getMessage());
+                    JOptionPane.showMessageDialog(this, "Error loading management panels: " + e.getMessage());
                 }
                 break;
             case SALES_STAFF:
