@@ -15,6 +15,7 @@ public class NguoiDungFormDialog extends JDialog {
     private NguoiDungDTO user;
     private NguoiDungDAO dao;
     private NhanVienDAO nhanVienDAO;
+    private JTextField usernameField;
 
     public NguoiDungFormDialog(NguoiDungDTO user) throws Exception {
         dao = new NguoiDungDAO();
@@ -52,8 +53,15 @@ public class NguoiDungFormDialog extends JDialog {
         populateStaffBox();
         formPanel.add(staffBox, gbc);
         
-        // Password field
+        // Username field
         gbc.gridx = 0; gbc.gridy = 1;
+        formPanel.add(new JLabel("Tên đăng nhập:"), gbc);
+        gbc.gridx = 1;
+        usernameField = new JTextField(20);
+        formPanel.add(usernameField, gbc);
+        
+        // Password field
+        gbc.gridx = 0; gbc.gridy = 2;
         formPanel.add(new JLabel("Mật khẩu:"), gbc);
         gbc.gridx = 1;
         passwordField = new JPasswordField(20);
@@ -74,6 +82,13 @@ public class NguoiDungFormDialog extends JDialog {
         saveBtn.addActionListener(e -> {
             try {
                 // Validate required fields
+                if (usernameField.getText().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, 
+                        "Vui lòng nhập tên đăng nhập", 
+                        "Lỗi", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
                 if (passwordField.getPassword().length == 0) {
                     JOptionPane.showMessageDialog(this, 
                         "Vui lòng nhập mật khẩu", 
@@ -94,9 +109,9 @@ public class NguoiDungFormDialog extends JDialog {
 
                 // Create DTO
                 NguoiDungDTO newUser = new NguoiDungDTO(
-                    selectedStaff[1].toString(), // Use staff name as username
+                    usernameField.getText().trim(),
                     new String(passwordField.getPassword()),
-                    (int)selectedStaff[0] // Staff ID
+                    (int)selectedStaff[0]
                 );
 
                 if (user == null) {
@@ -137,14 +152,30 @@ public class NguoiDungFormDialog extends JDialog {
                 }
             }
             staffBox.setEnabled(false); // Disable staff selection when editing
+            usernameField.setText(user.getTenDangNhap());
             passwordField.setText(user.getMatKhau());
         }
     }
 
     private void populateStaffBox() throws Exception {
         List<Object[]> staffList = nhanVienDAO.dsNhanVien();
+        List<NguoiDungDTO> userList = dao.findAll();
+        java.util.Set<Integer> usedMaNV = new java.util.HashSet<>();
+        for (NguoiDungDTO u : userList) {
+            usedMaNV.add(u.getMaNV());
+        }
         for (Object[] staff : staffList) {
-            staffBox.addItem(staff);
+            int maNV = (int) staff[0];
+            // If adding, only show staff not already used. If editing, always show the current user's staff.
+            if (user == null) {
+                if (!usedMaNV.contains(maNV)) {
+                    staffBox.addItem(staff);
+                }
+            } else {
+                if (!usedMaNV.contains(maNV) || maNV == user.getMaNV()) {
+                    staffBox.addItem(staff);
+                }
+            }
         }
     }
 

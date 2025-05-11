@@ -108,8 +108,8 @@ public class LoginFrame extends javax.swing.JFrame {
             public void actionPerformed(ActionEvent e) {
                 // String username = txtUsername.getText();
                 // String password = new String(txtPassword.getPassword());
-                String username = "hoangminhduy";
-                String password = "password123";
+                String username = "duynh";
+                String password = "1";
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginFrame.this,
                             "Vui lòng nhập đầy đủ thông tin!",
@@ -122,7 +122,7 @@ public class LoginFrame extends javax.swing.JFrame {
                     NguoiDungDTO user = nguoiDungService.timNguoiDung(username);
                     if (user != null && user.getMatKhau().equals(password)) {
                         dispose();
-                        new MainFrame(UserRole.ADMIN).setVisible(true); // TODO: Get actual role from user
+                        new MainFrame(user.getVaiTro()).setVisible(true);
                     } else {
                         JOptionPane.showMessageDialog(LoginFrame.this,
                                 "Tên đăng nhập hoặc mật khẩu không đúng!",

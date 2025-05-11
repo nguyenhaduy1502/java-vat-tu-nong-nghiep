@@ -61,7 +61,10 @@ public class NguoiDungDAO {
     }
 
     public NguoiDungDTO timNguoiDung(String tenDangNhap) throws Exception {
-        String query = "SELECT * FROM NguoiDung WHERE TenDangNhap = ?";
+        String query = "SELECT nd.TenDangNhap, nd.MatKhau, nd.MaNV, nv.VaiTro " +
+                       "FROM NguoiDung nd " +
+                       "JOIN NhanVien nv ON nd.MaNV = nv.MaNV " +
+                       "WHERE nd.TenDangNhap = ?";
         try (Connection conn = connection.getConnect();
              PreparedStatement statement = conn.prepareStatement(query)) {
             statement.setString(1, tenDangNhap);
@@ -70,7 +73,8 @@ public class NguoiDungDAO {
                     return new NguoiDungDTO(
                         rs.getString("TenDangNhap"),
                         rs.getString("MatKhau"),
-                        rs.getInt("MaNV")
+                        rs.getInt("MaNV"),
+                        UserRole.fromMaVT(rs.getInt("VaiTro"))
                     );
                 }
                 return null;

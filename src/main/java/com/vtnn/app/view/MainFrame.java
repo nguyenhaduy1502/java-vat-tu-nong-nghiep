@@ -3,6 +3,7 @@ package com.vtnn.app.view;
 import com.vtnn.app.models.UserRole;
 import com.vtnn.app.ui.NguoiDungTablePanel;
 import com.vtnn.app.ui.NhanVienTablePanel;
+import com.vtnn.app.ui.KhachHangTablePanel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -61,6 +62,7 @@ public class MainFrame extends JFrame {
             case ADMIN:
                 addNavButton("Quản lý người dùng", "users");
                 addNavButton("Quản lý nhân viên", "staff");
+                addNavButton("Quản lý khách hàng", "customers");
                 addNavButton("Báo cáo thống kê", "reports");
                 break;
             case SALES_STAFF:
@@ -139,13 +141,26 @@ public class MainFrame extends JFrame {
                     NhanVienTablePanel staffPanel = new NhanVienTablePanel();
                     cardPanels.put("staff", staffPanel);
                     mainPanel.add(staffPanel, "staff");
+
+                    // Add customer management panel
+                    KhachHangTablePanel customerPanel = new KhachHangTablePanel();
+                    cardPanels.put("customers", customerPanel);
+                    mainPanel.add(customerPanel, "customers");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Error loading management panels: " + e.getMessage());
                 }
                 break;
             case SALES_STAFF:
-                // Add sales staff panels
+                try {
+                    // Add customer management panel
+                    KhachHangTablePanel customerPanel = new KhachHangTablePanel();
+                    cardPanels.put("customers", customerPanel);
+                    mainPanel.add(customerPanel, "customers");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error loading customer panel: " + e.getMessage());
+                }
                 break;
             case ACCOUNTANT:
                 // Add accountant panels

@@ -110,30 +110,27 @@ public class KhachHangDAO {
 
     // Lấy danh sách khách hàng
     public List<Object[]> dsKhachHang() throws Exception {
-        List<Object[]> ds = new ArrayList<>();
-        String query = """
-                       SELECT KhachHang.MaKH, KhachHang.TenKH, GioiTinh.LoaiGT, KhachHang.SoDienThoai, KhachHang.DiaChi, KhachHang.Email
-                       FROM KhachHang
-                       JOIN GioiTinh ON KhachHang.GioiTinh = GioiTinh.MaGT
-                       """;
+        List<Object[]> list = new ArrayList<>();
+        String sql = "SELECT KhachHang.MaKH, KhachHang.TenKH, GioiTinh.LoaiGT, KhachHang.SoDienThoai, KhachHang.DiaChi, KhachHang.Email " +
+                    "FROM KhachHang " +
+                    "JOIN GioiTinh ON KhachHang.GioiTinh = GioiTinh.MaGT";
+        
         try (Connection conn = connection.getConnect();
              Statement statement = conn.createStatement();
-             ResultSet rs = statement.executeQuery(query)) {
+             ResultSet rs = statement.executeQuery(sql)) {
+            
             while (rs.next()) {
-                ds.add(new Object[]{
-                    rs.getInt("MaKH"),
-                    rs.getString("TenKH"),
-                    rs.getString("LoaiGT"),
-                    rs.getString("SoDienThoai"),
-                    rs.getString("DiaChi"),
-                    rs.getString("Email")
-                });
+                Object[] kh = new Object[6];
+                kh[0] = rs.getInt("MaKH");
+                kh[1] = rs.getString("TenKH");
+                kh[2] = rs.getString("LoaiGT");
+                kh[3] = rs.getString("SoDienThoai");
+                kh[4] = rs.getString("DiaChi");
+                kh[5] = rs.getString("Email");
+                list.add(kh);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException("Lỗi lấy danh sách khách hàng", e);
         }
-        return ds;
+        return list;
     }
 
     // Tìm khách hàng theo mã
