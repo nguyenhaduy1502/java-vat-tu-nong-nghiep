@@ -8,6 +8,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import com.vtnn.app.models.UserRole;
+import com.vtnn.app.services.NguoiDung;
+import com.vtnn.app.models.NguoiDungDTO;
 
 /**
  *
@@ -21,12 +24,21 @@ public class LoginFrame extends javax.swing.JFrame {
     private JLabel lblUsername;
     private JLabel lblPassword;
     private JLabel lblTitle;
+    private NguoiDung nguoiDungService;
 
     /**
      * Creates new form LoginFrame
      */
     public LoginFrame() {
-        setupUI();
+        try {
+            nguoiDungService = new NguoiDung();
+            setupUI();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage(),
+                "Lỗi",
+                JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void setupUI() {
@@ -105,11 +117,23 @@ public class LoginFrame extends javax.swing.JFrame {
                     return;
                 }
                 
-                // TODO: Add login logic here
-                JOptionPane.showMessageDialog(LoginFrame.this,
-                    "Đăng nhập thành công!",
-                    "Thông báo",
-                    JOptionPane.INFORMATION_MESSAGE);
+                try {
+                    NguoiDungDTO user = nguoiDungService.timNguoiDung(username);
+                    if (user != null && user.getMatKhau().equals(password)) {
+                        dispose();
+                        new MainFrame(UserRole.ADMIN).setVisible(true); // TODO: Get actual role from user
+                    } else {
+                        JOptionPane.showMessageDialog(LoginFrame.this,
+                            "Tên đăng nhập hoặc mật khẩu không đúng!",
+                            "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
+                    }
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(LoginFrame.this,
+                        "Lỗi đăng nhập: " + ex.getMessage(),
+                        "Lỗi",
+                        JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
 

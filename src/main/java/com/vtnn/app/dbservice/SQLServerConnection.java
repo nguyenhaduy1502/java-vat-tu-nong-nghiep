@@ -17,7 +17,7 @@ public class SQLServerConnection {
 
     // Constructor đọc cấu hình từ file properties
     public SQLServerConnection() throws IOException {
-        loadConfig("/dbservice/config.properties");
+        loadConfig("/com/vtnn/app/dbservice/config.properties");
     }
 
     // Đọc thông tin cấu hình từ file .properties
@@ -47,7 +47,7 @@ public class SQLServerConnection {
         }
 
         String url = "jdbc:sqlserver://" + this.server + ":" + this.port +
-                     ";databaseName=" + this.database + ";encrypt=" + this.encrypt;
+                ";databaseName=" + this.database + ";encrypt=" + this.encrypt;
 
         try {
             return DriverManager.getConnection(url, this.username, this.password);
