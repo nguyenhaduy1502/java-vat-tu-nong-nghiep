@@ -35,9 +35,9 @@ public class LoginFrame extends javax.swing.JFrame {
             setupUI();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this,
-                "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage(),
-                "Lỗi",
-                JOptionPane.ERROR_MESSAGE);
+                    "Lỗi kết nối cơ sở dữ liệu: " + e.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -106,17 +106,18 @@ public class LoginFrame extends javax.swing.JFrame {
         btnLogin.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String username = txtUsername.getText();
-                String password = new String(txtPassword.getPassword());
-                
+                // String username = txtUsername.getText();
+                // String password = new String(txtPassword.getPassword());
+                String username = "hoangminhduy";
+                String password = "password123";
                 if (username.isEmpty() || password.isEmpty()) {
                     JOptionPane.showMessageDialog(LoginFrame.this,
-                        "Vui lòng nhập đầy đủ thông tin!",
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
+                            "Vui lòng nhập đầy đủ thông tin!",
+                            "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                
+
                 try {
                     NguoiDungDTO user = nguoiDungService.timNguoiDung(username);
                     if (user != null && user.getMatKhau().equals(password)) {
@@ -124,15 +125,15 @@ public class LoginFrame extends javax.swing.JFrame {
                         new MainFrame(UserRole.ADMIN).setVisible(true); // TODO: Get actual role from user
                     } else {
                         JOptionPane.showMessageDialog(LoginFrame.this,
-                            "Tên đăng nhập hoặc mật khẩu không đúng!",
-                            "Lỗi",
-                            JOptionPane.ERROR_MESSAGE);
+                                "Tên đăng nhập hoặc mật khẩu không đúng!",
+                                "Lỗi",
+                                JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(LoginFrame.this,
-                        "Lỗi đăng nhập: " + ex.getMessage(),
-                        "Lỗi",
-                        JOptionPane.ERROR_MESSAGE);
+                            "Lỗi đăng nhập: " + ex.getMessage(),
+                            "Lỗi",
+                            JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
@@ -153,9 +154,13 @@ public class LoginFrame extends javax.swing.JFrame {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+        // <editor-fold defaultstate="collapsed" desc=" Look and feel setting code
+        // (optional) ">
+        /*
+         * If Nimbus (introduced in Java SE 6) is not available, stay with the default
+         * look and feel.
+         * For details see
+         * http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
@@ -165,15 +170,19 @@ public class LoginFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(LoginFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                    ex);
         }
-        //</editor-fold>
+        // </editor-fold>
 
         /* Create and display the form */
         SwingUtilities.invokeLater(new Runnable() {

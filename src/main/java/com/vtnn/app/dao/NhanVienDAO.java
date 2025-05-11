@@ -178,4 +178,22 @@ public class NhanVienDAO {
             throw new SQLException("Lỗi khi tìm kiếm nhân viên theo mã", e);
         }
     }
+    
+    // Check if MaNV exists in NhanVien table
+    public boolean exists(int maNV) throws Exception {
+        String query = "SELECT COUNT(*) FROM NhanVien WHERE MaNV = ?";
+        try (Connection conn = connection.getConnect();
+             PreparedStatement statement = conn.prepareStatement(query)) {
+            statement.setInt(1, maNV);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1) > 0;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new SQLException("Lỗi khi kiểm tra tồn tại của mã nhân viên", e);
+        }
+        return false;
+    }
 }

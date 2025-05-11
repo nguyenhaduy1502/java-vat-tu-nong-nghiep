@@ -110,7 +110,7 @@ public class NguoiDungDAO {
                     rs.getString("TenDangNhap"),
                     rs.getString("MatKhau"),
                     rs.getInt("MaNV"),
-                    UserRole.valueOf(rs.getString("VaiTro"))
+                    UserRole.fromMaVT(rs.getInt("VaiTro"))
                 );
             }
         } catch (SQLException e) {
@@ -132,7 +132,7 @@ public class NguoiDungDAO {
                     rs.getString("TenDangNhap"),
                     rs.getString("MatKhau"),
                     rs.getInt("MaNV"),
-                    UserRole.valueOf(rs.getString("VaiTro"))
+                    UserRole.fromMaVT(rs.getInt("VaiTro"))
                 ));
             }
         } catch (SQLException e) {

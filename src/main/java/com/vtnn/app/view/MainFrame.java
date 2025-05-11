@@ -1,6 +1,7 @@
 package com.vtnn.app.view;
 
 import com.vtnn.app.models.UserRole;
+import com.vtnn.app.ui.NguoiDungTablePanel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -54,7 +55,7 @@ public class MainFrame extends JFrame {
 
         // Add navigation buttons based on user role
         addNavButton("Trang chủ", "home");
-        
+
         switch (currentUserRole) {
             case ADMIN:
                 addNavButton("Quản lý người dùng", "users");
@@ -64,6 +65,10 @@ public class MainFrame extends JFrame {
             case SALES_STAFF:
                 addNavButton("Bán hàng", "sales");
                 addNavButton("Quản lý khách hàng", "customers");
+                break;
+            case ACCOUNTANT:
+                addNavButton("Quản lý tài chính", "finance");
+                addNavButton("Báo cáo tài chính", "financial-reports");
                 break;
             case WAREHOUSE_STAFF:
                 addNavButton("Quản lý kho", "inventory");
@@ -123,10 +128,21 @@ public class MainFrame extends JFrame {
         // Add other panels based on user role
         switch (currentUserRole) {
             case ADMIN:
-                // Add admin panels
+                try {
+                    // Add user management panel
+                    NguoiDungTablePanel userPanel = new NguoiDungTablePanel();
+                    cardPanels.put("users", userPanel);
+                    mainPanel.add(userPanel, "users");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error loading user management: " + e.getMessage());
+                }
                 break;
             case SALES_STAFF:
                 // Add sales staff panels
+                break;
+            case ACCOUNTANT:
+                // Add accountant panels
                 break;
             case WAREHOUSE_STAFF:
                 // Add warehouse staff panels
@@ -136,4 +152,4 @@ public class MainFrame extends JFrame {
         // Show home panel by default
         cardLayout.show(mainPanel, "home");
     }
-} 
+}
