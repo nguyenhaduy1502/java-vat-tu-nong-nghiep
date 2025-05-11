@@ -1,6 +1,9 @@
 package com.vtnn.app.view;
 
 import com.vtnn.app.models.UserRole;
+import com.vtnn.app.models.HoaDonBanDTO;
+import com.vtnn.app.models.ChiTietBanDTO;
+import com.vtnn.app.services.PDFGeneratorService;
 import com.vtnn.app.ui.NguoiDungTablePanel;
 import com.vtnn.app.ui.NhanVienTablePanel;
 import com.vtnn.app.ui.KhachHangTablePanel;
@@ -8,6 +11,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+import java.math.BigDecimal;
+import java.sql.Date;
 
 public class MainFrame extends JFrame {
     private JPanel mainPanel;
@@ -123,8 +130,63 @@ public class MainFrame extends JFrame {
 
     private void setupCards() {
         // Add home panel
-        JPanel homePanel = new JPanel();
-        homePanel.add(new JLabel("Chào mừng đến với hệ thống quản lý vật tư nông nghiệp"));
+        JPanel homePanel = new JPanel(new BorderLayout());
+        
+        // Welcome message
+        JLabel welcomeLabel = new JLabel("Chào mừng đến với hệ thống quản lý vật tư nông nghiệp");
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        homePanel.add(welcomeLabel, BorderLayout.NORTH);
+        
+        // TODO: For testing purposes, we will generate a sample invoice PDF
+        JPanel quickActionsPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        JButton generatePDFBtn = new JButton("Tạo hóa đơn PDF");
+        generatePDFBtn.setPreferredSize(new Dimension(200, 40));
+        generatePDFBtn.addActionListener(e -> {
+            try {
+                // Create a sample invoice
+                HoaDonBanDTO hoaDon = new HoaDonBanDTO(
+                    1,                          // maHD
+                    new Date(System.currentTimeMillis()), // ngayBan
+                    1001,                       // maKH
+                    "Nguyễn Văn A",            // nguoiTao
+                    new BigDecimal("1500000")   // tongTien
+                );
+
+                // Create sample invoice details
+                List<ChiTietBanDTO> chiTietBan = new ArrayList<>();
+                chiTietBan.add(new ChiTietBanDTO(
+                    1,                          // maHD
+                    1,                          // maSP
+                    2,                          // soLuong
+                    new BigDecimal("500000")    // donGia
+                ));
+                chiTietBan.add(new ChiTietBanDTO(
+                    1,                          // maHD
+                    2,                          // maSP
+                    1,                          // soLuong
+                    new BigDecimal("500000")    // donGia
+                ));
+
+                // Generate PDF
+                PDFGeneratorService pdfGenerator = new PDFGeneratorService();
+                pdfGenerator.generateInvoicePDF(hoaDon, chiTietBan, "invoice.pdf");
+                
+                JOptionPane.showMessageDialog(this,
+                    "Đã tạo hóa đơn PDF thành công!",
+                    "Thành công",
+                    JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this,
+                    "Lỗi khi tạo hóa đơn PDF: " + ex.getMessage(),
+                    "Lỗi",
+                    JOptionPane.ERROR_MESSAGE);
+            }
+        });
+        quickActionsPanel.add(generatePDFBtn);
+        homePanel.add(quickActionsPanel, BorderLayout.CENTER);
+        
         cardPanels.put("home", homePanel);
         mainPanel.add(homePanel, "home");
 
