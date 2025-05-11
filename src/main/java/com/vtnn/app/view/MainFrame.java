@@ -7,6 +7,7 @@ import com.vtnn.app.services.PDFGeneratorService;
 import com.vtnn.app.ui.NguoiDungTablePanel;
 import com.vtnn.app.ui.NhanVienTablePanel;
 import com.vtnn.app.ui.KhachHangTablePanel;
+import com.vtnn.app.ui.ReportsPanel;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
@@ -208,6 +209,11 @@ public class MainFrame extends JFrame {
                     KhachHangTablePanel customerPanel = new KhachHangTablePanel();
                     cardPanels.put("customers", customerPanel);
                     mainPanel.add(customerPanel, "customers");
+                    
+                    // Add reports panel
+                    ReportsPanel reportsPanel = new ReportsPanel();
+                    cardPanels.put("reports", reportsPanel);
+                    mainPanel.add(reportsPanel, "reports");
                 } catch (Exception e) {
                     e.printStackTrace();
                     JOptionPane.showMessageDialog(this, "Error loading management panels: " + e.getMessage());
